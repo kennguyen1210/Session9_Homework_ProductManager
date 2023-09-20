@@ -4,7 +4,7 @@ import model.DanhMuc;
 import model.Product;
 import util.InputMethods;
 
-public class ProductService {
+public class ProductService implements IService<Product, String>{
     public static Product[] products = new Product[100];
 
     // hien thi san pham
@@ -19,26 +19,6 @@ public class ProductService {
         return !check;
     }
 
-    // them moi san pham
-    public boolean addPro(Product addProduct){
-        for (int i = 0; i < products.length; i++) {
-            if(products[i] == null){
-                products[i] = addProduct;
-                return true;
-            }
-        }
-        return false;
-    }
-    // cap nhat san pham thong qua id
-    public boolean editProduct(Product updatePro) {
-        for (int i = 0; i < products.length; i++) {
-            if(products[i] != null && products[i].getId().equalsIgnoreCase(updatePro.getId())) {
-                products[i] = updatePro;
-                return true;
-            }
-        }
-        return false;
-    }
     // tim kiem san pham theo ten
     public boolean findByName(String name) {
         boolean check = true;
@@ -52,6 +32,11 @@ public class ProductService {
         return !check;
     }
 
+    @Override
+    public Product[] getAll() {
+        return products;
+    }
+
     // tim kiem san pham theo id
     public Product findById(String id){
         for (Product pro: products
@@ -62,31 +47,22 @@ public class ProductService {
         }
         return null;
     }
-    // cap nhat thong tin san pham theo danh muc
-    public void changeDanhMuc(DanhMuc prev, DanhMuc next){
-        for (Product pro: products
-             ) {
-            if(pro != null && pro.getDanhMuc().getName().equalsIgnoreCase(prev.getName())){
-                pro.setDanhMuc(next);
+
+    //update san pham
+    @Override
+    public boolean save(Product updatePro) {
+        for (int i = 0; i < products.length; i++) {
+            if(products[i] != null && products[i].getId().equalsIgnoreCase(updatePro.getId())) {
+                products[i] = updatePro;
+                return true;
             }
         }
-
-    }
-
-    // kiem tra xem danh muc co san pham hay khong
-    public boolean haveProduct(String name){
-        boolean check = true;
-        for (Product pro: products
-        ) {
-            if(pro != null && pro.getDanhMuc().getName().equalsIgnoreCase(name)){
-                check = false;
-            }
-        }
-        return !check;
+        return false;
     }
 
     // xoa san pham theo id
-    public boolean deleteProduct(String id){
+    @Override
+    public boolean delete(String id) {
         for (int i = 0; i < products.length; i++) {
             if(products[i] != null && products[i].getId().equalsIgnoreCase(id)){
                 products[i] = null;
@@ -95,4 +71,43 @@ public class ProductService {
         }
         return false;
     }
+
+
+    // them moi san pham
+    @Override
+    public boolean add(Product addProduct) {
+        for (int i = 0; i < products.length; i++) {
+            if(products[i] == null){
+                products[i] = addProduct;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // cap nhat thong tin san pham theo danh muc
+    public void changeDanhMuc(DanhMuc update){
+        for (Product pro: products
+             ) {
+            if(pro != null && pro.getDanhMuc().getId().equalsIgnoreCase(update.getId())){
+                pro.setDanhMuc(update);
+            }
+        }
+
+    }
+
+    // kiem tra xem danh muc co san pham hay khong
+    public boolean haveProduct(String id){
+        boolean check = true;
+        for (Product pro: products
+        ) {
+            if(pro != null && pro.getDanhMuc().getId().equalsIgnoreCase(id)){
+                check = false;
+            }
+        }
+        return !check;
+    }
+
+
+
 }

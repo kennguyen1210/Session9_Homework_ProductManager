@@ -53,70 +53,81 @@ public class App {
                 // hien thi danh sach danh muc
                 case 1:
                     dmService.displayAll();
+                    System.out.println("An nut bat ky de quay lai");
+                    InputMethods.pressAnyKey();
                     break;
                 // Them moi danh muc
                 case 2:
                     while (true) {
                         DanhMuc newDm = new DanhMuc();
-                        System.out.println("Nhap danh muc muon them");
-                        String str = InputMethods.getString();
-                        if (dmService.findByName(str) > -1) {
+                        System.out.println("Nhap id danh muc muon them");
+                        String newId = InputMethods.getString();
+                        DanhMuc dm = dmService.findById(newId);
+                        if(dm != null) {
                             System.err.println("Danh muc nay da ton tai, vui long nhap danh muc khac");
                         } else {
+                            newDm.setId(newId);
+                            System.out.println("Nhap ten danh muc : ");
+                            String str = InputMethods.getString();
                             newDm.setName(str);
                             if (dmService.add(newDm)) {
                                 System.out.println(" Them danh muc thanh cong!");
                             } else {
                                 System.err.println(" Them danh muc that bai!");
                             }
-                        }
-                        System.out.println("Ban muon tiep tuc them danh muc khong ? y/n");
-                        char out = InputMethods.getChar();
-                        if (out == 'n') {
-                            break;
+                            System.out.println("Ban muon tiep tuc them danh muc khong ? y/n");
+                            char out = InputMethods.getChar();
+                            if (out == 'n') {
+                                break;
+                            }
                         }
                     }
                     break;
+
                 // cap nhat danh muc
                 case 3:
                     dmService.displayAll();
                     while (true) {
-                        System.out.println("Nhap danh muc muon cap nhat");
-                        String prev = InputMethods.getString();
-                        if (dmService.findByName(prev) > -1) {
-                            System.out.println("Danh muc cap nhat se la ? ");
-                            String next = InputMethods.getString();
-                            DanhMuc preDm = new DanhMuc(prev);
-                            DanhMuc newDm = dmService.update(prev, next);
-                            if (newDm != null) {
+                        System.out.println("Nhap id danh muc muon cap nhat");
+                        String updateId = InputMethods.getString();
+                        DanhMuc updateDm = dmService.findById(updateId);
+                        if (updateDm != null) {
+                            System.out.println("Danh muc hien tai la : " + updateDm.getName() + ".Cap nhat danh muc se la ? ");
+                            String update = InputMethods.getString();
+                            updateDm.setName(update);
+                            if (dmService.save(updateDm)) {
                                 System.out.println("Cap nhat danh muc thanh cong");
-                                proService.changeDanhMuc(preDm, newDm);
+                                proService.changeDanhMuc(updateDm);
                                 dmService.displayAll();
+                            } else {
+                                System.err.println("Cap nhat khong thanh cong!");
+                            }
+                            System.out.println("Ban muon tiep tuc cap nhat danh muc khong ? y/n");
+                            char out = InputMethods.getChar();
+                            if (out == 'n') {
+                                break;
                             }
                         } else {
                             System.err.println("Danh muc khong ton tai!");
                         }
-                        System.out.println("Ban muon tiep tuc cap nhat danh muc khong ? y/n");
-                        char out = InputMethods.getChar();
-                        if (out == 'n') {
-                            break;
-                        }
+
 
                     }
                     break;
                 // xoa danh muc
                 case 4:
+                    dmService.displayAll();
                     while (true) {
-                        System.out.println(" Nhap danh muc muon xoa :");
-                        String deleteDanhMuc = InputMethods.getString();
-                        if (proService.haveProduct(deleteDanhMuc)) {
+                        System.out.println("Nhap id danh muc muon xoa :");
+                        String deleteId = InputMethods.getString();
+                        if (proService.haveProduct(deleteId)) {
                             System.err.println("Danh muc co san pham nen khong the xoa! Hay nhap danh muc khac!");
                         } else {
                             while (true) {
                                 System.out.println("Ban co chac chan muon xoa khong ? y/n");
                                 char confirm = InputMethods.getChar();
                                 if (confirm == 'y') {
-                                    if (dmService.daleteDanhMuc(deleteDanhMuc)) {
+                                    if (dmService.delete(deleteId)) {
                                         System.out.println("Xoa thanh cong");
                                         break;
                                     }
@@ -164,6 +175,8 @@ public class App {
                     if (!proService.displayAll()) {
                         System.out.println("Hien tai chua co san pham nao! Vui long them san pham");
                     }
+                    System.out.println("Nhan nut bat ky den thoat");
+                    InputMethods.pressAnyKey();
                     break;
 
                 // them moi san pham
@@ -173,10 +186,10 @@ public class App {
                         DanhMuc addDanhMuc = new DanhMuc();
                         dmService.displayAll();
                         while (true) {
-                            System.out.println("Nhap danh muc cho san pham :");
-                            String danhMuc = InputMethods.getString();
-                            if (dmService.findByName(danhMuc) > -1) {
-                                addDanhMuc.setName(danhMuc);
+                            System.out.print("Nhap danh muc cho san pham theo Id:");
+                            String idDanhMuc = InputMethods.getString();
+                            addDanhMuc = dmService.findById(idDanhMuc);
+                            if (addDanhMuc != null) {
                                 break;
                             } else {
                                 System.err.println("Danh muc khong ton tai!");
@@ -184,7 +197,7 @@ public class App {
                         }
                         String id;
                         while (true) {
-                            System.out.print("\nNhap Id san pham : ");
+                            System.out.print("Nhap Id san pham : ");
                             id = InputMethods.getString();
                             if (proService.findById(id) != null) {
                                 System.err.println("Id san pham da ton tai, vui long nhap id khac!");
@@ -193,17 +206,17 @@ public class App {
                             }
                         }
 
-                        System.out.print("\nNhap ten san pham : ");
+                        System.out.print("Nhap ten san pham : ");
                         String name = InputMethods.getString();
 
-                        System.out.print("\nNhap gia san pham ($): ");
+                        System.out.print("Nhap gia san pham ($): ");
                         double gia = InputMethods.getDouble();
 
-                        System.out.print("\nNhap so luong san pham : ");
+                        System.out.print("Nhap so luong san pham : ");
                         int soLuong = InputMethods.getInteger();
                         System.out.println();
                         Product newPro = new Product(id, addDanhMuc, name, gia, soLuong);
-                        if (proService.addPro(newPro)) {
+                        if (proService.add(newPro)) {
                             System.out.println("====> *** Them moi san pham thanh cong!");
                         } else {
                             System.err.println("Them moi that bai");
@@ -234,17 +247,20 @@ public class App {
                         System.out.println("ten hien tai : " + updateProduct.getTenSanPham());
                         String newName = InputMethods.getString();
                         updateProduct.setTenSanPham(newName);
-                        System.out.println("danh muc hien tai la : " + updateProduct.getDanhMuc().getName() + ". Nhap danh muc sua doi :");
-                        String dm = InputMethods.getString();
-                        DanhMuc newDm = new DanhMuc(dm);
-                        updateProduct.setDanhMuc(newDm);
-                        System.out.println("gia hien tai : " + updateProduct.getGia());
+                        System.out.println("danh muc hien tai :" + "id  "
+                                + updateProduct.getDanhMuc().getId() + " | "
+                                + updateProduct.getDanhMuc().getName() );
+                        System.out.println("Danh muc sua doi id la ? ");
+                        String changeId = InputMethods.getString();
+                        DanhMuc dm = dmService.findById(changeId);
+                        updateProduct.setDanhMuc(dm);
+                        System.out.println("gia hien tai : " + updateProduct.getGia() + "$");
                         double newGia = InputMethods.getDouble();
                         updateProduct.setGia(newGia);
                         System.out.println("So luong hien tai : " + updateProduct.getSoLuong());
                         int newSoLuong = InputMethods.getInteger();
                         updateProduct.setSoLuong(newSoLuong);
-                        if (proService.editProduct(updateProduct)) {
+                        if (proService.save(updateProduct)) {
                             System.out.println("========> Cap nhat thanh cong!");
                         } else {
                             System.err.println("Cap nhat that bai");
@@ -260,7 +276,7 @@ public class App {
                 case 4:
                     String deleteId;
                     while (true) {
-                        System.out.print("\nNhap Id san pham muon xoa :");
+                        System.out.print("Nhap Id san pham muon xoa :");
                         deleteId = InputMethods.getString();
                         if (proService.findById(deleteId) == null) {
                             System.err.println("Id san pham khong ton tai, vui long nhap id khac!");
@@ -268,14 +284,14 @@ public class App {
                             System.out.println("Ban co chac chan muon xoa khong ? y/n");
                             char confirm = InputMethods.getChar();
                             if (confirm == 'y') {
-                                if (proService.deleteProduct(deleteId)) {
+                                if (proService.delete(deleteId)) {
                                     System.out.println("====> Xoa thanh cong!");
                                 } else {
                                     System.err.println("Xoa khong thanh cong!");
                                 }
                             }
                         }
-                        System.out.println("Ban co muon tiep tuc cap nhat san pham khong ? y/n");
+                        System.out.println("Ban co muon tiep tuc xoa san pham khong ? y/n");
                         char exit = InputMethods.getChar();
                         if (exit == 'n') {
                             break;
@@ -286,7 +302,7 @@ public class App {
                     while (true) {
                         System.out.print("Nhap ten san pham muon tim kiem : ");
                         String searchName = InputMethods.getString();
-                        if(!proService.findByName(searchName)){
+                        if (!proService.findByName(searchName)) {
                             System.err.println("Khong tim thay san pham phu hop");
                         }
                         System.out.println();

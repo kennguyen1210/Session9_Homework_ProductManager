@@ -2,12 +2,13 @@ package model;
 
 public class DanhMuc {
     private String name;
-
+    private String id;
     public DanhMuc(){
 
     }
-    public DanhMuc(String name){
+    public DanhMuc(String id, String name){
         this.name = name;
+        this.id = id;
     }
 
     public String getName() {
@@ -18,4 +19,11 @@ public class DanhMuc {
         this.name = name;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
